@@ -4,18 +4,18 @@
 char tokens[200][50];
 FILE *fi;
 
+enum word_type{
+        word_type_separator,
+};
+
 int check_word(char c){
-	if(isdigit(c))
-		return 0;
-	else if(isalpha(c))
-		return 1;
-	else if(c=='\n' || c==' ' || c=='\t')
-		return 2;
-	else if((c>='(' && c<='/')||c==';'||c=='=')
+	if(c=='\n' || c==' ' || c=='\t'){
+		return word_type_separator;
+        }else if((c>='(' && c<='/')||c==';'||c=='='){
 		return 3;
-	else if(c==':')      //コロンは'='と必ず一緒になるので
+        }else if(c==':'){      //コロンは'='と必ず一緒になるので
 		return 4;
-	else if(c=='<' || c=='>'){  //この場合は次の文字を見る必要がある
+        }else if(c=='<' || c=='>'){  //この場合は次の文字を見る必要がある
 		c=fgetc(fi);
 		fseek(fi,-1,1);
 		if(c=='=' || c=='>'){
@@ -38,7 +38,7 @@ int main(){
                         break;
                 }
 		printf("%c\n",c);
-		if(check_word(c)==0){//数字なら 
+		if(isdigit(c)){
                         int char_p=0;
                         int string_length=0;
                         do{
@@ -46,12 +46,12 @@ int main(){
                                 tokens[token_num][char_p]=c;
                                 char_p++;
                                 c=fgetc(fi);
-                        }while(check_word(c)==0);
+                        }while(isdigit(c));
                         tokens[token_num][char_p]='\0';
                         fseek(fi,-1,SEEK_CUR);
                         token_num++;
 		}
-		else if(check_word(c)==1){//文字なら 
+		else if(isalpha(c)){
                         int char_p=0;
                         int string_length=0;
                         do{
@@ -59,27 +59,15 @@ int main(){
                                 tokens[token_num][char_p]=c;
                                 char_p++;
                                 c=fgetc(fi);
-                        }while(check_word(c)==1||check_word(c)==0);
+                        }while(isdigit(c)||isalpha(c));
                         tokens[token_num][char_p]='\0';
                         fseek(fi,-1,SEEK_CUR);
                         token_num++;
-		}
-		//else if(check_word(c)==2){  //改行，スペース，タブなら
-                //        int char_p=0;
-		//	if(char_p!=0){
-		//		tokens[token_num][char_p]='\0';
-		//		char_p=0;
-		//		token_num++;
-		//	}
-		//	else{
-		//		//do nothing!!
-		//	}
-		//}
-                else if(check_word(c)==3){  //記号なら(1文字)
+		}else if(check_word(c)==3){  //記号なら(1文字)
                         tokens[token_num][0]=c;
                         tokens[token_num][1]='\0';
                         token_num++;
-		} else if(check_word(c)==4){  //記号なら(2文字)
+		}else if(check_word(c)==4){  //記号なら(2文字)
                         tokens[token_num][0]=c;
                         tokens[token_num][1]=fgetc(fi);
                         tokens[token_num][2]='\0';
@@ -110,4 +98,3 @@ int main(){
                 puts("");
         }
 }
-
