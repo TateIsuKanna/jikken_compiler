@@ -16,9 +16,9 @@ int check_word(char c){
 		return word_type_separator;
         }else if((c>='(' && c<='/')||c==';'||c=='='){
 		return word_type_1char;
-        }else if(c==':'){      //コロンは'='と必ず一緒になるので
+        }else if(c==':'){
 		return word_type_2char;
-        }else if(c=='<' || c=='>'){  //この場合は次の文字を見る必要がある
+        }else if(c=='<' || c=='>'){
 		c=fgetc(fi);
 		fseek(fi,-1,1);
 		if(c=='=' || c=='>'){
@@ -32,10 +32,16 @@ int check_word(char c){
 
 char* reserved_words[]={"begin","end","if","then","while","do","return","function","var","const","odd","write","writeln"};
 
-int main(){
+int main(int argc,char *argv[]){
+        if(argc!=2){
+                return -1;
+        }
         new_vector(&tokens);
 
-	fi=fopen("p1","r");
+	fi=fopen(argv[1],"r");
+        if(fi==NULL){
+                return -1;
+        }
 	while(1){
 		char c=fgetc(fi);
 		if(c==EOF){
