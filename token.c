@@ -27,6 +27,8 @@ int check_word(char c){
         return -1;
 }
 
+char* reserved_words[]={"begin","end","if","then","while","do","return","function","var","const","odd","write","writeln"};
+
 int main(){
 	fi=fopen("p1","r");
 	int token_num=0;
@@ -82,11 +84,30 @@ int main(){
                         tokens[token_num][1]=fgetc(fi);
                         tokens[token_num][2]='\0';
                         token_num++;
-		}
+                }
 	}
 	
-	for(int i=0;i<token_num;i++){
-		printf("%3d  %s\n",i,tokens[i]);
+        for(int i=0;i<token_num;i++){
+                printf("%3d  %s\t",i,tokens[i]);
+                int is_reserved_word=0;
+                for(int word_search_i=0;word_search_i<13;++word_search_i){
+                        if(strcmp(reserved_words[word_search_i],tokens[i])==0){
+                                printf("予約語\n");
+                                is_reserved_word=1;
+                                break;
+                        }
+                }
+                if(is_reserved_word){
+                        continue;
+                }
+                if(isdigit(tokens[i][0])){
+                        printf("整数");
+                }else if(check_word(tokens[i][0])>=3){
+                        printf("記号");
+                }else{
+                        printf("名前");
+                }
+                puts("");
         }
 }
 
