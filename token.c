@@ -57,7 +57,7 @@ int main(){
                                 tokens[token_num][char_p]=c;
                                 char_p++;
                                 c=fgetc(fi);
-                        }while(check_word(c)==1);
+                        }while(check_word(c)==1||check_word(c)==0);
                         tokens[token_num][char_p]='\0';
                         fseek(fi,-1,SEEK_CUR);
                         token_num++;
