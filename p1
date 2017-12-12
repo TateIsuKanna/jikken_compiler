@@ -2,7 +2,7 @@ function gcd(x,y)
 begin
         while x <> y do
                 begin if x < t then y:=y-x;
-                        if y < x then x:=x-y;
+                        if y<x then x:=x-y;
                 end;
         return x
 end;
