@@ -7,22 +7,24 @@ FILE *fi;
 
 enum word_type{
         word_type_separator,
+        word_type_1char,
+        word_type_2char,
 };
 
 int check_word(char c){
 	if(c=='\n' || c==' ' || c=='\t'){
 		return word_type_separator;
         }else if((c>='(' && c<='/')||c==';'||c=='='){
-		return 3;
+		return word_type_1char;
         }else if(c==':'){      //コロンは'='と必ず一緒になるので
-		return 4;
+		return word_type_2char;
         }else if(c=='<' || c=='>'){  //この場合は次の文字を見る必要がある
 		c=fgetc(fi);
 		fseek(fi,-1,1);
 		if(c=='=' || c=='>'){
-			return 4;
+			return word_type_2char;
 		}else{
-			return 3;
+			return word_type_1char;
 		}
 	}
         return -1;
@@ -59,11 +61,11 @@ int main(){
                         }while(isdigit(c)||isalpha(c));
                         tokens.data[tokens.size-1][char_p]='\0';
                         fseek(fi,-1,SEEK_CUR);
-		}else if(check_word(c)==3){  //記号なら(1文字)
+		}else if(check_word(c)==word_type_1char){
                         vector_push(&tokens);
                         tokens.data[tokens.size-1][0]=c;
                         tokens.data[tokens.size-1][1]='\0';
-		}else if(check_word(c)==4){  //記号なら(2文字)
+		}else if(check_word(c)==word_type_2char){
                         vector_push(&tokens);
                         tokens.data[tokens.size-1][0]=c;
                         tokens.data[tokens.size-1][1]=fgetc(fi);
@@ -74,7 +76,7 @@ int main(){
         for(int i=0;i<tokens.size;i++){
                 printf("%3d  %s\t",i,tokens.data[i]);
                 int is_reserved_word=0;
-                for(int word_search_i=0;word_search_i<13;++word_search_i){
+                for(int word_search_i=0;word_search_i<sizeof(reserved_words)/sizeof(char*);++word_search_i){
                         if(strcmp(reserved_words[word_search_i],tokens.data[i])==0){
                                 printf("予約語\n");
                                 is_reserved_word=1;
@@ -86,7 +88,7 @@ int main(){
                 }
                 if(isdigit(tokens.data[i][0])){
                         printf("整数");
-                }else if(check_word(tokens.data[i][0])>=3){
+                }else if(check_word(tokens.data[i][0])>=word_type_1char){
                         printf("記号");
                 }else{
                         printf("名前");
