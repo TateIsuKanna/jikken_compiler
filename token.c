@@ -40,11 +40,8 @@ int main(){
 		printf("%c\n",c);
 		if(isdigit(c)){
                         int char_p=0;
-                        int string_length=0;
                         do{
-                                string_length++;
-                                tokens[token_num][char_p]=c;
-                                char_p++;
+                                tokens[token_num][char_p++]=c;
                                 c=fgetc(fi);
                         }while(isdigit(c));
                         tokens[token_num][char_p]='\0';
@@ -53,11 +50,8 @@ int main(){
 		}
 		else if(isalpha(c)){
                         int char_p=0;
-                        int string_length=0;
                         do{
-                                string_length++;
-                                tokens[token_num][char_p]=c;
-                                char_p++;
+                                tokens[token_num][char_p++]=c;
                                 c=fgetc(fi);
                         }while(isdigit(c)||isalpha(c));
                         tokens[token_num][char_p]='\0';
