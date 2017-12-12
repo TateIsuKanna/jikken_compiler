@@ -1,7 +1,8 @@
 #include<stdio.h>
 #include <ctype.h>
+#include"vector.h"
 
-char tokens[200][50];
+struct vector tokens;
 FILE *fi;
 
 enum word_type{
@@ -30,8 +31,9 @@ int check_word(char c){
 char* reserved_words[]={"begin","end","if","then","while","do","return","function","var","const","odd","write","writeln"};
 
 int main(){
+        new_vector(&tokens);
+
 	fi=fopen("p1","r");
-	int token_num=0;
 	while(1){
 		char c=fgetc(fi);
 		if(c==EOF){
@@ -40,40 +42,40 @@ int main(){
 		printf("%c\n",c);
 		if(isdigit(c)){
                         int char_p=0;
+                        vector_push(&tokens);
                         do{
-                                tokens[token_num][char_p++]=c;
+                                tokens.data[tokens.size-1][char_p++]=c;
                                 c=fgetc(fi);
                         }while(isdigit(c));
-                        tokens[token_num][char_p]='\0';
+                        tokens.data[tokens.size-1][char_p]='\0';
                         fseek(fi,-1,SEEK_CUR);
-                        token_num++;
 		}
 		else if(isalpha(c)){
                         int char_p=0;
+                        vector_push(&tokens);
                         do{
-                                tokens[token_num][char_p++]=c;
+                                tokens.data[tokens.size-1][char_p++]=c;
                                 c=fgetc(fi);
                         }while(isdigit(c)||isalpha(c));
-                        tokens[token_num][char_p]='\0';
+                        tokens.data[tokens.size-1][char_p]='\0';
                         fseek(fi,-1,SEEK_CUR);
-                        token_num++;
 		}else if(check_word(c)==3){  //記号なら(1文字)
-                        tokens[token_num][0]=c;
-                        tokens[token_num][1]='\0';
-                        token_num++;
+                        vector_push(&tokens);
+                        tokens.data[tokens.size-1][0]=c;
+                        tokens.data[tokens.size-1][1]='\0';
 		}else if(check_word(c)==4){  //記号なら(2文字)
-                        tokens[token_num][0]=c;
-                        tokens[token_num][1]=fgetc(fi);
-                        tokens[token_num][2]='\0';
-                        token_num++;
+                        vector_push(&tokens);
+                        tokens.data[tokens.size-1][0]=c;
+                        tokens.data[tokens.size-1][1]=fgetc(fi);
+                        tokens.data[tokens.size-1][2]='\0';
                 }
 	}
 	
-        for(int i=0;i<token_num;i++){
-                printf("%3d  %s\t",i,tokens[i]);
+        for(int i=0;i<tokens.size;i++){
+                printf("%3d  %s\t",i,tokens.data[i]);
                 int is_reserved_word=0;
                 for(int word_search_i=0;word_search_i<13;++word_search_i){
-                        if(strcmp(reserved_words[word_search_i],tokens[i])==0){
+                        if(strcmp(reserved_words[word_search_i],tokens.data[i])==0){
                                 printf("予約語\n");
                                 is_reserved_word=1;
                                 break;
@@ -82,9 +84,9 @@ int main(){
                 if(is_reserved_word){
                         continue;
                 }
-                if(isdigit(tokens[i][0])){
+                if(isdigit(tokens.data[i][0])){
                         printf("整数");
-                }else if(check_word(tokens[i][0])>=3){
+                }else if(check_word(tokens.data[i][0])>=3){
                         printf("記号");
                 }else{
                         printf("名前");
