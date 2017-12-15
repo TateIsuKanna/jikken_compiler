@@ -1,7 +1,9 @@
+#define _GNU_SOURCE
 #include<stdio.h>
 #include<ctype.h>
 #include<string.h>
 #include<stdlib.h>
+#include<stdbool.h>
 #include"vector.h"
 
 struct vector tokens;
@@ -41,13 +43,13 @@ int main(int argc,char *argv[]){
 	new_vector(&tokens);
 
 	fi=fopen(argv[1],"r");
-	if(fi==NULL){
+	if(!fi){
 		return -1;
 	}
 	while(1){
 		char* line_str=NULL;
-		int null;
-		if(getline(&line_str,&null,fi)==EOF){
+		size_t line_str_size=0;
+		if(getline(&line_str,&line_str_size,fi)==EOF){
 			break;
 		}
 		for(int line_p=0;line_p<strlen(line_str);){
