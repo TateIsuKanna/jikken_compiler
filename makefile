@@ -1,3 +1,4 @@
+ARG=
 CFLAGS=-Wall --std=c11
 
 pcp:token.c vector
@@ -5,3 +6,6 @@ pcp:token.c vector
 
 vector:vector.*
 	gcc $(CFLAGS) -c -o vector vector.c
+
+run:pcp
+	./pcp $(ARG)
