@@ -51,32 +51,26 @@ int main(int argc,char *argv[]){
 			break;
 		}
 		int line_p=0;
+		//TODO:文字数取得を関数で切り分け?
 		while(1){
 			if(isdigit(line_str[line_p])){
-				vector_push(&tokens);
 				int word_end_g=line_p;
 				while(isdigit(line_str[++word_end_g]));
-				strncpy(tokens.data[tokens.size-1],line_str+line_p,word_end_g-line_p);
-				tokens.data[tokens.size-1][word_end_g-line_p]='\0';
+				vector_push(&tokens,line_str+line_p,word_end_g-line_p);
 				line_p+=word_end_g-line_p;
 			}
 			else if(isalpha(line_str[line_p])){
-				vector_push(&tokens);
 				int word_end_g=line_p;
 				//数字か文字か両方確認してから++
 				while(isdigit(line_str[word_end_g])||isalpha(line_str[++word_end_g]));
-				strncpy(tokens.data[tokens.size-1],line_str+line_p,word_end_g-line_p);
-				tokens.data[tokens.size-1][word_end_g-line_p]='\0';
+				vector_push(&tokens,line_str+line_p,word_end_g-line_p);
 				line_p+=word_end_g-line_p;
 			}else if(check_word(line_str+line_p)==word_type_1char){
-				vector_push(&tokens);
-				tokens.data[tokens.size-1][0]=line_str[line_p++];
-				tokens.data[tokens.size-1][1]='\0';
+				vector_push(&tokens,line_str+line_p,1);
+				line_p++;
 			}else if(check_word(line_str+line_p)==word_type_2char){
-				vector_push(&tokens);
-				tokens.data[tokens.size-1][0]=line_str[line_p++];
-				tokens.data[tokens.size-1][1]=line_str[line_p++];
-				tokens.data[tokens.size-1][2]='\0';
+				vector_push(&tokens,line_str+line_p,2);
+				line_p+=2;
 			}else if(line_str[line_p]=='\n'||line_str[line_p]=='\r'){
 				break;
 			}else{
