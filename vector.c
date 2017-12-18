@@ -12,7 +12,7 @@ void vector_push(struct vector* a,char* str,size_t str_size){
 	a->data[a->size][str_size]='\0';
         a->size++;
         if(a->size>=a->memory_size){
-                a->data=(char**)realloc(a->data,sizeof(char**)*a->memory_size*2);
                 a->memory_size*=2;
+                a->data=(char**)realloc(a->data,sizeof(char**)*a->memory_size);
         }
 }
