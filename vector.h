@@ -1,6 +1,6 @@
 struct vector{
-        int size;
-        int memory_size;
+        size_t size;
+        size_t memory_size;
         char** data;
 };
 void new_vector(struct vector* a);
