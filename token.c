@@ -10,13 +10,19 @@ struct vector tokens;
 FILE *fi;
 
 enum word_type{
+	word_type_digit,
+	word_type_alpha,
 	word_type_separator,
 	word_type_1char,
 	word_type_2char,
 };
 
 int check_word(char* c){
-	if(*c=='\n' || *c==' ' || *c=='\t'){
+	if(isdigit(*c)){
+		return word_type_digit;
+	}else if(isalpha(*c)){
+		return word_type_alpha;
+	}else if(*c=='\n' || *c==' ' || *c=='\t'){
 		return word_type_separator;
 	}else if((*c>='(' && *c<='/')||*c==';'||*c=='='){
 		return word_type_1char;
@@ -52,14 +58,14 @@ int main(int argc,char *argv[]){
 		}
 		int line_p=0;
 		//TODO:文字数取得を関数で切り分け?
+		//switch
 		while(1){
 			if(isdigit(line_str[line_p])){
 				int word_end_g=line_p;
 				while(isdigit(line_str[++word_end_g]));
 				vector_push(&tokens,line_str+line_p,word_end_g-line_p);
 				line_p+=word_end_g-line_p;
-			}
-			else if(isalpha(line_str[line_p])){
+			}else if(isalpha(line_str[line_p])){
 				int word_end_g=line_p;
 				//数字か文字か両方確認してから++
 				while(isdigit(line_str[word_end_g])||isalpha(line_str[++word_end_g]));
@@ -94,12 +100,17 @@ int main(int argc,char *argv[]){
 		if(is_reserved_word){
 			continue;
 		}
-		if(isdigit(tokens.data[i][0])){
-			printf("整数");
-		}else if(check_word(tokens.data[i])>=word_type_1char){//HACK:特に!
-			printf("記号");
-		}else{
-			printf("名前");
+		switch(check_word(tokens.data[i])){
+			case word_type_digit:
+				printf("整数");
+				break;
+			case word_type_alpha:
+				printf("名前");
+				break;
+			case word_type_1char:
+			case word_type_2char:
+				printf("記号");
+				break;
 		}
 		puts("");
 	}
