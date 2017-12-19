@@ -188,6 +188,7 @@ void var_decl(){
                 exit_by_error("var_decl ;");
         }
 }
+void block();
 void func_decl(){
         printf("begin func_decl\n");
         if(get_token_type(tokens.data[current_token_i])!=token_type_ident){
@@ -225,29 +226,9 @@ void func_decl(){
                 exit_by_error("func_decl ;");
         }
 }
-void block(){
-        printf("begin block\n");
-        while(1){
-                if(iseqstr(tokens.data[current_token_i],"const")){
-                        printf("begin const_decl\n");
-                        const_decl();
-                }else if(iseqstr(tokens.data[current_token_i],"var")){
-                        printf("begin var_decl\n");
-                        var_decl();
-                }else if(iseqstr(tokens.data[current_token_i],"function")){
-                        printf("func_decl\n");
-                        current_token_i++;
-                        func_decl();
-                }else{
-                        break;
-                }
-                current_token_i++;
-        }
-        statement();
-        printf("end block\n");
-}
 
 
+void expression();
 void factor(){
         printf("begin factor\n");
         current_token_i++;
@@ -396,6 +377,27 @@ void statement(){
         }
 }
 
+void block(){
+        printf("begin block\n");
+        while(1){
+                if(iseqstr(tokens.data[current_token_i],"const")){
+                        printf("begin const_decl\n");
+                        const_decl();
+                }else if(iseqstr(tokens.data[current_token_i],"var")){
+                        printf("begin var_decl\n");
+                        var_decl();
+                }else if(iseqstr(tokens.data[current_token_i],"function")){
+                        printf("func_decl\n");
+                        current_token_i++;
+                        func_decl();
+                }else{
+                        break;
+                }
+                current_token_i++;
+        }
+        statement();
+        printf("end block\n");
+}
 int main(int argc,char *argv[]){
 	if(argc!=2){
 		return -1;
