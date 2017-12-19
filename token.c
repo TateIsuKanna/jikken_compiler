@@ -190,7 +190,6 @@ void var_decl(){
 }
 void func_decl(){
         printf("begin func_decl\n");
-        current_token_i++;
         if(get_token_type(tokens.data[current_token_i])!=token_type_ident){
                 exit_by_error("func_decl token_type_ident");
         }
@@ -228,7 +227,6 @@ void func_decl(){
 }
 void block(){
         printf("begin block\n");
-        current_token_i++;
         while(1){
                 if(iseqstr(tokens.data[current_token_i],"const")){
                         printf("begin const_decl\n");
@@ -238,10 +236,12 @@ void block(){
                         var_decl();
                 }else if(iseqstr(tokens.data[current_token_i],"function")){
                         printf("func_decl\n");
+                        current_token_i++;
                         func_decl();
                 }else{
                         break;
                 }
+                current_token_i++;
         }
         statement();
         printf("end block\n");
@@ -332,7 +332,6 @@ void condition(){
 
 void statement(){
         printf("begin statement\n");
-        current_token_i++;
         if(get_token_type(tokens.data[current_token_i])==token_type_ident){
                 printf("ident\n");
                 current_token_i++;
@@ -360,6 +359,7 @@ void statement(){
                 return;
         }
         if(iseqstr(tokens.data[current_token_i],"if")){
+                printf("if\n");
                 condition();
                 current_token_i++;
                 if(!iseqstr(tokens.data[current_token_i],"then")){
@@ -369,6 +369,7 @@ void statement(){
                 return;
         }
         if(iseqstr(tokens.data[current_token_i],"while")){
+                printf("while\n");
                 condition();
                 current_token_i++;
                 if(!iseqstr(tokens.data[current_token_i],"do")){
@@ -378,14 +379,17 @@ void statement(){
                 return;
         }
         if(iseqstr(tokens.data[current_token_i],"return")){
+                printf("return\n");
                 expression();
                 return;
         }
         if(iseqstr(tokens.data[current_token_i],"write")){
+                printf("write\n");
                 expression();
                 return;
         }
         if(iseqstr(tokens.data[current_token_i],"writeln")){
+                printf("writeln\n");
                 return;
         }else{
                 current_token_i--;//TODO:どういうこと?????
