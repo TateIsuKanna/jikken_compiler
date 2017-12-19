@@ -14,10 +14,17 @@ enum word_type{
 	word_type_alpha,
 	word_type_separator,
 	word_type_1char,
-	word_type_2char,
+	word_type_2char
 };
 
-int check_word(char* c){
+enum token_type{
+        token_type_reserved,
+        token_type_mark,
+        token_type_ident,
+        token_type_integer
+};
+
+enum word_type get_word_type(char* c){
 	if(isdigit(*c)){
 		return word_type_digit;
 	}else if(isalpha(*c)){
@@ -40,16 +47,7 @@ int check_word(char* c){
 
 char* reserved_words[]={"begin","end","if","then","while","do","return","function","var","const","odd","write","writeln"};
 
-int main(int argc,char *argv[]){
-	if(argc!=2){
-		return -1;
-	}
-	new_vector(&tokens);
-
-	fi=fopen(argv[1],"r");
-	if(!fi){
-		return -1;
-	}
+void get_token(){
 	char* line_str=NULL;
 	size_t line_str_size=0;
 	while(1){
@@ -71,10 +69,10 @@ int main(int argc,char *argv[]){
 				while(isdigit(line_str[word_end_g])||isalpha(line_str[++word_end_g]));
 				vector_push(&tokens,line_str+line_p,word_end_g-line_p);
 				line_p+=word_end_g-line_p;
-			}else if(check_word(line_str+line_p)==word_type_1char){
+			}else if(get_word_type(line_str+line_p)==word_type_1char){
 				vector_push(&tokens,line_str+line_p,1);
 				line_p++;
-			}else if(check_word(line_str+line_p)==word_type_2char){
+			}else if(get_word_type(line_str+line_p)==word_type_2char){
 				vector_push(&tokens,line_str+line_p,2);
 				line_p+=2;
 			}else if(line_str[line_p]=='\n'||line_str[line_p]=='\r'){
@@ -100,7 +98,7 @@ int main(int argc,char *argv[]){
 		if(is_reserved_word){
 			continue;
 		}
-		switch(check_word(tokens.data[i])){
+		switch(get_word_type(tokens.data[i])){
 			case word_type_digit:
 				printf("整数");
 				break;
@@ -111,7 +109,102 @@ int main(int argc,char *argv[]){
 			case word_type_2char:
 				printf("記号");
 				break;
+                        case word_type_separator:
+                                break;
 		}
 		puts("");
 	}
+}
+
+//TODO:signとget_word_type
+char* sign_words[]={"+","-","*","/","(",")","=","<",">","<>","<=",">=",",",".",";",":="};
+enum token_type get_token_type(char* token){
+        if(isdigit(*token)){
+                return token_type_integer;
+        }
+        for(int word_search_i=0;word_search_i<sizeof(reserved_words)/sizeof(char*);++word_search_i){
+                if(strcmp(reserved_words[word_search_i],token)==0){
+                        printf("予約語\n");
+                        return token_type_reserved;
+                }
+        }
+        for(int word_search_i=0;word_search_i<sizeof(sign_words)/sizeof(char*);++word_search_i){
+                if(strcmp(sign_words[word_search_i],token)==0){
+                        printf("記号\n");
+                        return token_type_mark;
+                }
+        }
+        return token_type_ident;
+}
+
+bool iseqstr(char* a,char* b){
+        return strcmp(a,b)==0;
+}
+
+int current_token_i;
+
+void exit_by_error(char* str){
+        printf("error %s",str);
+        exit(-1);
+}
+
+void const_decl(){
+        printf("begin const_decl\n");
+        do{
+                current_token_i++;
+                if(get_token_type(tokens.data[current_token_i])!=token_type_ident){
+                        exit_by_error("const_decl token_type_ident");
+                }
+                current_token_i++;
+                if(!iseqstr(tokens.data[current_token_i],"=")){
+                        exit_by_error("const_decl =");
+                }
+                current_token_i++;
+                if(get_token_type(tokens.data[current_token_i])!=token_type_integer){
+                        exit_by_error("const_decl token_type_integer");
+                }
+                current_token_i++;
+        }while(iseqstr(tokens.data[current_token_i],","));
+        if(iseqstr(tokens.data[current_token_i],";")){
+                printf("end const_decl\n");
+                current_token_i++;
+        }else{
+                exit_by_error("const_decl ;");
+        }
+}
+void var_decl(){
+}
+void func_decl(){
+}
+void statement(){
+}
+
+void block(){
+        while(1){
+                if(iseqstr(tokens.data[current_token_i],"const")){
+                        const_decl();
+                }else if(iseqstr(tokens.data[current_token_i],"var")){
+                        var_decl();
+                }else if(iseqstr(tokens.data[current_token_i],"function")){
+                        func_decl();
+                }else{
+                        break;
+                }
+        }
+        statement();
+}
+
+int main(int argc,char *argv[]){
+	if(argc!=2){
+		return -1;
+	}
+	new_vector(&tokens);
+
+	fi=fopen(argv[1],"r");
+	if(!fi){
+		return -1;
+	}
+        get_token();
+
+        block();
 }
