@@ -65,8 +65,9 @@ void get_token(){
 				line_p+=word_end_g-line_p;
 			}else if(isalpha(line_str[line_p])){
 				int word_end_g=line_p;
-				//数字か文字か両方確認してから++
-				while(isdigit(line_str[word_end_g])||isalpha(line_str[++word_end_g]));
+				while(isdigit(line_str[word_end_g])||isalpha(line_str[word_end_g])){
+                                        word_end_g++;
+                                }
 				vector_push(&tokens,line_str+line_p,word_end_g-line_p);
 				line_p+=word_end_g-line_p;
 			}else if(get_word_type(line_str+line_p)==word_type_1char){
