@@ -461,7 +461,7 @@ int main(int argc,char *argv[]){
 	}
 
         block();
-        if(tokens.data[current_token_i][0]=='.'){
+        if(tokens.data[tokens.size-1][0]=='.'){
                 printf("completed\n");
         }else{
                 exit_by_error("expected '.' at the end of program");
