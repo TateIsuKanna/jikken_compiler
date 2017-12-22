@@ -147,6 +147,11 @@ void exit_by_error(char* str){
         exit(-1);
 }
 
+void print_token(char* str){
+	printf("%s\t%s\n",str,tokens.data[current_token_i]);
+}
+
+
 
 void const_decl(){
         printf("begin const_decl\n");
@@ -166,7 +171,6 @@ void const_decl(){
                 current_token_i++;
         }while(iseqstr(tokens.data[current_token_i],","));
         if(iseqstr(tokens.data[current_token_i],";")){
-                printf("end const_decl\n");
                 current_token_i++;
         }else{
                 exit_by_error("const_decl ;");
@@ -182,7 +186,6 @@ void var_decl(){
                 current_token_i++;
         }while(iseqstr(tokens.data[current_token_i],","));
         if(tokens.data[current_token_i][0]==';'){
-                printf("end var_decl\n");
                 return;
         }else{
                 exit_by_error("var_decl ;");
@@ -220,7 +223,6 @@ void func_decl(){
         block();
         current_token_i++;
         if(tokens.data[current_token_i][0]==';'){
-                printf("end func_decl\n");
                 return;
         }else{
                 exit_by_error("func_decl ;");
@@ -230,9 +232,8 @@ void func_decl(){
 
 void expression();
 void factor(){
-        printf("begin factor\n");
-        current_token_i++;
-        if(get_token_type(tokens.data[current_token_i])!=token_type_ident){
+        if(get_token_type(tokens.data[current_token_i])==token_type_ident){
+		print_token("factor");
                 current_token_i++;
                 if(iseqstr(tokens.data[current_token_i],"(")){
                         //TODO:
@@ -240,12 +241,17 @@ void factor(){
                         return;
                 }
         }
-        if(get_token_type(tokens.data[current_token_i])!=token_type_integer){
+        if(get_token_type(tokens.data[current_token_i])==token_type_integer){
+		print_token("factor");
+		current_token_i++;
                 return;
         }
         if(tokens.data[current_token_i][0]=='('){
+		print_token("factor");
+		current_token_i++;
                 expression();
                 if(tokens.data[current_token_i][0]==')'){
+			current_token_i++;
                         return;
                 }else{
                         exit_by_error("factor )");
@@ -254,39 +260,34 @@ void factor(){
 }
 
 void term(){
-        printf("begin term\n");
         factor();
         while(1){
-                current_token_i++;
-                if(tokens.data[current_token_i][0]=='*'||
-                tokens.data[current_token_i][0]=='/'){
-                }else{
+                if(tokens.data[current_token_i][0]!='*'&&
+                tokens.data[current_token_i][0]!='/'){
                         break;
                 }
+		print_token("term");
+		current_token_i++;
                 factor();
         }
-        printf("end term\n");
 }
 
 void expression(){
-        printf("begin expression\n");
-        current_token_i++;
         if(tokens.data[current_token_i][0]=='+'||
            tokens.data[current_token_i][0]=='-'){
-        }else{
-                current_token_i--;//TODO:どういうこと?????
+		print_token("expression");
+		current_token_i++;
         }
         term();
         while(1){
-                current_token_i++;
-                if(tokens.data[current_token_i][0]=='+'||
-                tokens.data[current_token_i][0]=='-'){
-                }else{
+                if(tokens.data[current_token_i][0]!='+'&&
+                tokens.data[current_token_i][0]!='-'){
                         break;
                 }
+		print_token("expression");
+                current_token_i++;
                 term();
         }
-        printf("end expression\n");
 }
 
 void condition(){
@@ -312,11 +313,12 @@ void condition(){
 }
 
 void statement(){
-        printf("begin statement\n");
         if(get_token_type(tokens.data[current_token_i])==token_type_ident){
-                printf("ident\n");
+		print_token("statement");
                 current_token_i++;
                 if(iseqstr(tokens.data[current_token_i],":=")){
+			print_token("statement");
+			current_token_i++;
                         expression();
                 }else{
                         exit_by_error("statement :=");
@@ -378,16 +380,15 @@ void statement(){
 }
 
 void block(){
-        printf("begin block\n");
         while(1){
                 if(iseqstr(tokens.data[current_token_i],"const")){
-                        printf("begin const_decl\n");
+                        print_token("block");
                         const_decl();
                 }else if(iseqstr(tokens.data[current_token_i],"var")){
-                        printf("begin var_decl\n");
+                        print_token("block");
                         var_decl();
                 }else if(iseqstr(tokens.data[current_token_i],"function")){
-                        printf("func_decl\n");
+                        print_token("block");
                         current_token_i++;
                         func_decl();
                 }else{
@@ -396,7 +397,6 @@ void block(){
                 current_token_i++;
         }
         statement();
-        printf("end block\n");
 }
 int main(int argc,char *argv[]){
 	if(argc!=2){
@@ -411,8 +411,6 @@ int main(int argc,char *argv[]){
         get_token();
 
         block();
-
-        current_token_i++;
         if(tokens.data[current_token_i][0]=='.'){
                 printf("completed\n");
         }else{
