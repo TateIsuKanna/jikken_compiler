@@ -154,26 +154,34 @@ void print_token(char* str){
 
 
 void const_decl(){
-        printf("begin const_decl\n");
-        do{
-                current_token_i++;
+        while(1){
                 if(get_token_type(tokens.data[current_token_i])!=token_type_ident){
                         exit_by_error("const_decl token_type_ident");
                 }
+		print_token("const_decl");
                 current_token_i++;
                 if(!iseqstr(tokens.data[current_token_i],"=")){
                         exit_by_error("const_decl =");
                 }
+		print_token("const_decl");
                 current_token_i++;
                 if(get_token_type(tokens.data[current_token_i])!=token_type_integer){
                         exit_by_error("const_decl token_type_integer");
                 }
+		print_token("const_decl");
                 current_token_i++;
-        }while(iseqstr(tokens.data[current_token_i],","));
+		if(!iseqstr(tokens.data[current_token_i],",")){
+			break;
+		}
+		print_token("const_decl");
+		current_token_i++;
+	}
         if(iseqstr(tokens.data[current_token_i],";")){
+		print_token("const_decl");
                 current_token_i++;
+		return;
         }else{
-                exit_by_error("const_decl ;");
+                exit_by_error("expected ';'");
         }
 }
 void var_decl(){
@@ -378,8 +386,6 @@ void statement(){
                 print_token("statement");
 		current_token_i++;
                 return;
-        }else{
-                current_token_i--;//TODO:どういうこと?????
         }
 }
 
@@ -387,9 +393,11 @@ void block(){
         while(1){
                 if(iseqstr(tokens.data[current_token_i],"const")){
                         print_token("block");
+			current_token_i++;
                         const_decl();
                 }else if(iseqstr(tokens.data[current_token_i],"var")){
                         print_token("block");
+			current_token_i++;
                         var_decl();
                 }else if(iseqstr(tokens.data[current_token_i],"function")){
                         print_token("block");
@@ -398,7 +406,6 @@ void block(){
                 }else{
                         break;
                 }
-                current_token_i++;
         }
         statement();
 }
@@ -413,11 +420,14 @@ int main(int argc,char *argv[]){
 		return -1;
 	}
         get_token();
+	if(tokens.size==0){
+		return 0;
+	}
 
         block();
         if(tokens.data[current_token_i][0]=='.'){
                 printf("completed\n");
         }else{
-                exit_by_error("last . error");
+                exit_by_error("expected '.' at the end of program");
         }
 }
