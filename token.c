@@ -143,7 +143,7 @@ bool iseqstr(char* a,char* b){
 int current_token_i;
 
 void exit_by_error(char* str){
-        printf("error %s\n",str);
+        fprintf(stderr,"error %s\n",str);
         exit(-1);
 }
 
@@ -156,17 +156,17 @@ void print_token(char* str){
 void const_decl(){
         while(1){
                 if(get_token_type(tokens.data[current_token_i])!=token_type_ident){
-                        exit_by_error("const_decl token_type_ident");
+                        exit_by_error("expected const value ident");
                 }
 		print_token("const_decl");
                 current_token_i++;
                 if(!iseqstr(tokens.data[current_token_i],"=")){
-                        exit_by_error("const_decl =");
+                        exit_by_error("expected '=' in const value declaration");
                 }
 		print_token("const_decl");
                 current_token_i++;
                 if(get_token_type(tokens.data[current_token_i])!=token_type_integer){
-                        exit_by_error("const_decl token_type_integer");
+                        exit_by_error("expected value at the const value declaration");
                 }
 		print_token("const_decl");
                 current_token_i++;
@@ -181,13 +181,13 @@ void const_decl(){
                 current_token_i++;
 		return;
         }else{
-                exit_by_error("expected ';'");
+                exit_by_error("expected ';' at the end of const value declaration");
         }
 }
 void var_decl(){
         while(1){
                 if(get_token_type(tokens.data[current_token_i])!=token_type_ident){
-                        exit_by_error("var_decl token_type_ident");
+                        exit_by_error("expected valiable ident");
                 }
 		print_token("var_decl");
                 current_token_i++;
@@ -202,18 +202,18 @@ void var_decl(){
 		current_token_i++;
                 return;
         }else{
-                exit_by_error("var_decl ;");
+                exit_by_error("expected ';' at the end of valiable declaration");
         }
 }
 void block();
 void func_decl(){
         if(get_token_type(tokens.data[current_token_i])!=token_type_ident){
-                exit_by_error("func_decl token_type_ident");
+                exit_by_error("expected function name");
         }
 	print_token("func_decl");
         current_token_i++;
         if(tokens.data[current_token_i][0]!='('){
-                exit_by_error("func_decl (");
+                exit_by_error("expected '(' in function definition");
         }
 	print_token("func_decl");
         current_token_i++;
@@ -233,7 +233,7 @@ void func_decl(){
                 }
         }
         if(tokens.data[current_token_i][0]!=')'){
-                exit_by_error("func_decl )");
+                exit_by_error("expected ')' in function definition");
         }
 	print_token("func_decl");
 	current_token_i++;
@@ -242,7 +242,7 @@ void func_decl(){
 		current_token_i++;
                 return;
         }else{
-                exit_by_error("func_decl ;");
+                exit_by_error("expected ';' at the end of function definition");
         }
 }
 
@@ -293,7 +293,7 @@ void factor(){
 			current_token_i++;
                         return;
                 }else{
-                        exit_by_error("factor )");
+			exit_by_error("expected ')' at the end of expression");
                 }
         }
 }
@@ -348,7 +348,7 @@ void condition(){
 		current_token_i++;
                 expression();
         }else{
-                exit_by_error("condition =<><><=>=");
+                exit_by_error("expected = <> <> <= >= ");
         }
 }
 
