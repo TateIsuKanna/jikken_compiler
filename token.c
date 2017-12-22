@@ -185,15 +185,21 @@ void const_decl(){
         }
 }
 void var_decl(){
-        printf("begin var_decl");
-        do{
-                current_token_i++;
+        while(1){
                 if(get_token_type(tokens.data[current_token_i])!=token_type_ident){
                         exit_by_error("var_decl token_type_ident");
                 }
+		print_token("var_decl");
                 current_token_i++;
-        }while(iseqstr(tokens.data[current_token_i],","));
+		if(!iseqstr(tokens.data[current_token_i],",")){
+			break;
+		}
+		print_token("var_decl");
+		current_token_i++;
+        }
         if(tokens.data[current_token_i][0]==';'){
+		print_token("var_decl");
+		current_token_i++;
                 return;
         }else{
                 exit_by_error("var_decl ;");
@@ -201,14 +207,15 @@ void var_decl(){
 }
 void block();
 void func_decl(){
-        printf("begin func_decl\n");
         if(get_token_type(tokens.data[current_token_i])!=token_type_ident){
                 exit_by_error("func_decl token_type_ident");
         }
+	print_token("func_decl");
         current_token_i++;
         if(tokens.data[current_token_i][0]!='('){
                 exit_by_error("func_decl (");
         }
+	print_token("func_decl");
         current_token_i++;
         //HACK:
         if(get_token_type(tokens.data[current_token_i])==token_type_ident){
@@ -216,21 +223,23 @@ void func_decl(){
                         if(get_token_type(tokens.data[current_token_i])!=token_type_ident){
                                 exit_by_error("func_decl token_type_ident");
                         }
+			print_token("func_decl");
                         current_token_i++;
                         if(!iseqstr(tokens.data[current_token_i],",")){
                                 break;
                         }
+			print_token("func_decl");
                         current_token_i++;
                 }
-        }else{
-                current_token_i--;//TODO:どういうこと?????
         }
         if(tokens.data[current_token_i][0]!=')'){
                 exit_by_error("func_decl )");
         }
+	print_token("func_decl");
+	current_token_i++;
         block();
-        current_token_i++;
         if(tokens.data[current_token_i][0]==';'){
+		current_token_i++;
                 return;
         }else{
                 exit_by_error("func_decl ;");
@@ -244,7 +253,27 @@ void factor(){
 		print_token("factor");
                 current_token_i++;
                 if(iseqstr(tokens.data[current_token_i],"(")){
-                        //TODO:
+			print_token("factor");
+			current_token_i++;
+			if(iseqstr(tokens.data[current_token_i],")")){
+				print_token("factor");
+				current_token_i++;
+				return;
+			}
+                        while(1){
+				expression();
+				if(!iseqstr(tokens.data[current_token_i],",")){
+					break;
+				}
+				current_token_i++;
+			}
+			if(iseqstr(tokens.data[current_token_i],")")){
+				print_token("factor");
+				current_token_i++;
+				return;
+			}else{
+				exit_by_error("expected ')' at the end of function arg");
+			}
                 }else{
                         return;
                 }
