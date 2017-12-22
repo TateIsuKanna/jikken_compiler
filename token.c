@@ -143,7 +143,7 @@ bool iseqstr(char* a,char* b){
 int current_token_i;
 
 void exit_by_error(char* str){
-        printf("error %s",str);
+        printf("error %s\n",str);
         exit(-1);
 }
 
@@ -291,21 +291,21 @@ void expression(){
 }
 
 void condition(){
-        printf("begin condition\n");
-        current_token_i++;
+        print_token("condition");
         if(iseqstr(tokens.data[current_token_i],"odd")){
+		current_token_i++;
                 expression();
                 return;
         }
-        current_token_i--;//TODO:どういうこと?????
         expression();
-        current_token_i++;
         if(iseqstr(tokens.data[current_token_i],"=")||
                 iseqstr(tokens.data[current_token_i],"<>")||
                 iseqstr(tokens.data[current_token_i],"<")||
                 iseqstr(tokens.data[current_token_i],">")||
                 iseqstr(tokens.data[current_token_i],"<=")||
                 iseqstr(tokens.data[current_token_i],">=")){
+		print_token("condition");
+		current_token_i++;
                 expression();
         }else{
                 exit_by_error("condition =<><><=>=");
@@ -326,53 +326,57 @@ void statement(){
                 return;
         }
         if(iseqstr(tokens.data[current_token_i],"begin")){
-                printf("begin\n");
+                print_token("statement");
                 while(1){
+			current_token_i++;
                         statement();
-                        current_token_i++;
                         if(tokens.data[current_token_i][0]!=';'){
                                 break;
                         }
                 }
-                current_token_i--;//TODO:どういうこと?????
-
                 if(!iseqstr(tokens.data[current_token_i],"end")){
                         exit_by_error("statement end");
                 }
+		current_token_i++;
                 return;
         }
         if(iseqstr(tokens.data[current_token_i],"if")){
-                printf("if\n");
+                print_token("statement");
+		current_token_i++;
                 condition();
-                current_token_i++;
                 if(!iseqstr(tokens.data[current_token_i],"then")){
                         exit_by_error("statement then");
                 }
+		current_token_i++;
                 statement();
                 return;
         }
         if(iseqstr(tokens.data[current_token_i],"while")){
-                printf("while\n");
+                print_token("statement");
+		current_token_i++;
                 condition();
-                current_token_i++;
                 if(!iseqstr(tokens.data[current_token_i],"do")){
                         exit_by_error("statement do");
                 }
+		current_token_i++;
                 statement();
                 return;
         }
         if(iseqstr(tokens.data[current_token_i],"return")){
-                printf("return\n");
+                print_token("statement");
+		current_token_i++;
                 expression();
                 return;
         }
         if(iseqstr(tokens.data[current_token_i],"write")){
-                printf("write\n");
+                print_token("statement");
+		current_token_i++;
                 expression();
                 return;
         }
         if(iseqstr(tokens.data[current_token_i],"writeln")){
-                printf("writeln\n");
+                print_token("statement");
+		current_token_i++;
                 return;
         }else{
                 current_token_i--;//TODO:どういうこと?????
