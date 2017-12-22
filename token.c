@@ -255,6 +255,7 @@ void factor(){
                 if(iseqstr(tokens.data[current_token_i],"(")){
 			print_token("factor");
 			current_token_i++;
+			//TODO:ここいい感じにまとめれそうじゃない? DRY!
 			if(iseqstr(tokens.data[current_token_i],")")){
 				print_token("factor");
 				current_token_i++;
@@ -288,6 +289,7 @@ void factor(){
 		current_token_i++;
                 expression();
                 if(tokens.data[current_token_i][0]==')'){
+			print_token("factor");
 			current_token_i++;
                         return;
                 }else{
@@ -330,6 +332,7 @@ void expression(){
 void condition(){
         print_token("condition");
         if(iseqstr(tokens.data[current_token_i],"odd")){
+		print_token("condition");
 		current_token_i++;
                 expression();
                 return;
@@ -370,10 +373,12 @@ void statement(){
                         if(tokens.data[current_token_i][0]!=';'){
                                 break;
                         }
+			print_token("statement");
                 }
                 if(!iseqstr(tokens.data[current_token_i],"end")){
                         exit_by_error("statement end");
                 }
+		print_token("statement");
 		current_token_i++;
                 return;
         }
@@ -384,6 +389,7 @@ void statement(){
                 if(!iseqstr(tokens.data[current_token_i],"then")){
                         exit_by_error("statement then");
                 }
+		print_token("statement");
 		current_token_i++;
                 statement();
                 return;
@@ -395,6 +401,7 @@ void statement(){
                 if(!iseqstr(tokens.data[current_token_i],"do")){
                         exit_by_error("statement do");
                 }
+		print_token("statement");
 		current_token_i++;
                 statement();
                 return;
