@@ -19,6 +19,6 @@ void vector_push(struct vector* a,char* str,size_t str_size,size_t line,size_t c
         a->size++;
         if(a->size>=a->memory_size){
                 a->memory_size*=2;
-                a->data=(struct token*)realloc(a->data,sizeof(struct token*)*a->memory_size);
+                a->data=(struct token**)realloc(a->data,sizeof(struct token*)*a->memory_size);
         }
 }
