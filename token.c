@@ -89,7 +89,7 @@ void get_token(){
 
 	//TODO:この辺関数で切り分け，あと全体的にHACK
 	for(int i=0;i<tokens.size;i++){
-		printf("%3d  %s %d:%d\t",i,tokens.data[i]->name,tokens.data[i]->line,tokens.data[i]->column);
+		printf("%3d  %10s %d:%d\t",i,tokens.data[i]->name,tokens.data[i]->line,tokens.data[i]->column);
 		bool is_reserved_word=false;
 		for(int word_search_i=0;word_search_i<sizeof(reserved_words)/sizeof(char*);++word_search_i){
 			if(strcmp(reserved_words[word_search_i],tokens.data[i]->name)==0){
@@ -150,7 +150,7 @@ void exit_by_error(char* str){
 }
 
 void print_token(char* str){
-	printf("%s\t%s %d:%d\n",str,tokens.data[current_token_i]->name,tokens.data[current_token_i]->line,tokens.data[current_token_i]->column);
+	printf("%10s  %10s %d:%d\n",str,tokens.data[current_token_i]->name,tokens.data[current_token_i]->line,tokens.data[current_token_i]->column);
 }
 
 
@@ -464,7 +464,7 @@ int main(int argc,char *argv[]){
 
         block();
         if(tokens.data[tokens.size-1]->name[0]=='.'){
-                printf("completed\n");
+                print_token("completed");
         }else{
                 exit_by_error("expected '.' at the end of program");
         }
