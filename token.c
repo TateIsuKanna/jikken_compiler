@@ -206,7 +206,7 @@ void var_decl(){
 		print_token("var_decl");
 		current_token_i++;
         }
-        if(tokens.data[current_token_i]->name[0]==';'){
+        if(iseqstr_current_token(";")){
 		print_token("var_decl");
 		current_token_i++;
                 return;
@@ -221,7 +221,7 @@ void func_decl(){
         }
 	print_token("func_decl");
         current_token_i++;
-        if(tokens.data[current_token_i]->name[0]!='('){
+        if(!iseqstr_current_token("(")){
                 exit_by_error("expected '(' in function definition");
         }
 	print_token("func_decl");
@@ -241,13 +241,13 @@ void func_decl(){
                         current_token_i++;
                 }
         }
-        if(tokens.data[current_token_i]->name[0]!=')'){
+        if(!iseqstr_current_token(")")){
                 exit_by_error("expected ')' in function definition");
         }
 	print_token("func_decl");
 	current_token_i++;
         block();
-        if(tokens.data[current_token_i]->name[0]==';'){
+        if(iseqstr_current_token(";")){
 		current_token_i++;
                 return;
         }else{
@@ -293,11 +293,11 @@ void factor(){
 		current_token_i++;
                 return;
         }
-        if(tokens.data[current_token_i]->name[0]=='('){
+        if(iseqstr_current_token("(")){
 		print_token("factor");
 		current_token_i++;
                 expression();
-                if(tokens.data[current_token_i]->name[0]==')'){
+                if(iseqstr_current_token(")")){
 			print_token("factor");
 			current_token_i++;
                         return;
@@ -310,8 +310,8 @@ void factor(){
 void term(){
         factor();
         while(1){
-                if(tokens.data[current_token_i]->name[0]!='*'&&
-                tokens.data[current_token_i]->name[0]!='/'){
+                if(!iseqstr_current_token("*")&&
+                !iseqstr_current_token("/")){
                         break;
                 }
 		print_token("term");
@@ -321,15 +321,15 @@ void term(){
 }
 
 void expression(){
-        if(tokens.data[current_token_i]->name[0]=='+'||
-           tokens.data[current_token_i]->name[0]=='-'){
+        if(iseqstr_current_token("+")||
+           iseqstr_current_token("-")){
 		print_token("expression");
 		current_token_i++;
         }
         term();
         while(1){
-                if(tokens.data[current_token_i]->name[0]!='+'&&
-                tokens.data[current_token_i]->name[0]!='-'){
+                if(!iseqstr_current_token("+")&&
+                !iseqstr_current_token("-")){
                         break;
                 }
 		print_token("expression");
@@ -379,7 +379,7 @@ void statement(){
                 while(1){
 			current_token_i++;
                         statement();
-                        if(tokens.data[current_token_i]->name[0]!=';'){
+                        if(!iseqstr_current_token(";")){
                                 break;
                         }
 			print_token("statement");
