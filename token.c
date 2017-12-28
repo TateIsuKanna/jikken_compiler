@@ -119,6 +119,8 @@ void get_token(){
 	}
 }
 
+int current_token_i;
+
 //TODO:signとget_word_type
 char* sign_words[]={"+","-","*","/","(",")","=","<",">","<>","<=",">=",",",".",";",":="};
 enum token_type get_token_type(char* token){
@@ -137,12 +139,17 @@ enum token_type get_token_type(char* token){
         }
         return token_type_ident;
 }
+enum token_type get_current_token_type(){
+	return get_token_type(tokens.data[current_token_i]->name);
+}
 
 bool iseqstr(char* a,char* b){
         return strcmp(a,b)==0;
 }
+bool iseqstr_current_token(char* str){
+	return iseqstr(tokens.data[current_token_i]->name,str);
+}
 
-int current_token_i;
 
 void exit_by_error(char* str){
         fprintf(stderr,"%d:%d: error %s but '%s' is given\n",tokens.data[current_token_i]->line,tokens.data[current_token_i]->column,str,tokens.data[current_token_i]->name);
@@ -157,28 +164,28 @@ void print_token(char* str){
 
 void const_decl(){
         while(1){
-                if(get_token_type(tokens.data[current_token_i]->name)!=token_type_ident){
+                if(get_current_token_type()!=token_type_ident){
                         exit_by_error("expected const value ident");
                 }
 		print_token("const_decl");
                 current_token_i++;
-                if(!iseqstr(tokens.data[current_token_i]->name,"=")){
+                if(!iseqstr_current_token("=")){
                         exit_by_error("expected '=' in const value declaration");
                 }
 		print_token("const_decl");
                 current_token_i++;
-                if(get_token_type(tokens.data[current_token_i]->name)!=token_type_integer){
+                if(get_current_token_type()!=token_type_integer){
                         exit_by_error("expected value at the const value declaration");
                 }
 		print_token("const_decl");
                 current_token_i++;
-		if(!iseqstr(tokens.data[current_token_i]->name,",")){
+		if(!iseqstr_current_token(",")){
 			break;
 		}
 		print_token("const_decl");
 		current_token_i++;
 	}
-        if(iseqstr(tokens.data[current_token_i]->name,";")){
+        if(iseqstr_current_token(";")){
 		print_token("const_decl");
                 current_token_i++;
 		return;
@@ -188,12 +195,12 @@ void const_decl(){
 }
 void var_decl(){
         while(1){
-                if(get_token_type(tokens.data[current_token_i]->name)!=token_type_ident){
+                if(get_current_token_type()!=token_type_ident){
                         exit_by_error("expected valiable ident");
                 }
 		print_token("var_decl");
                 current_token_i++;
-		if(!iseqstr(tokens.data[current_token_i]->name,",")){
+		if(!iseqstr_current_token(",")){
 			break;
 		}
 		print_token("var_decl");
@@ -209,7 +216,7 @@ void var_decl(){
 }
 void block();
 void func_decl(){
-        if(get_token_type(tokens.data[current_token_i]->name)!=token_type_ident){
+        if(get_current_token_type()!=token_type_ident){
                 exit_by_error("expected function name");
         }
 	print_token("func_decl");
@@ -220,14 +227,14 @@ void func_decl(){
 	print_token("func_decl");
         current_token_i++;
         //HACK:
-        if(get_token_type(tokens.data[current_token_i]->name)==token_type_ident){
+        if(get_current_token_type()==token_type_ident){
                 while(1){
-                        if(get_token_type(tokens.data[current_token_i]->name)!=token_type_ident){
+                        if(get_current_token_type()!=token_type_ident){
                                 exit_by_error("func_decl token_type_ident");
                         }
 			print_token("func_decl");
                         current_token_i++;
-                        if(!iseqstr(tokens.data[current_token_i]->name,",")){
+                        if(!iseqstr_current_token(",")){
                                 break;
                         }
 			print_token("func_decl");
@@ -251,26 +258,26 @@ void func_decl(){
 
 void expression();
 void factor(){
-        if(get_token_type(tokens.data[current_token_i]->name)==token_type_ident){
+        if(get_current_token_type()==token_type_ident){
 		print_token("factor");
                 current_token_i++;
-                if(iseqstr(tokens.data[current_token_i]->name,"(")){
+                if(iseqstr_current_token("(")){
 			print_token("factor");
 			current_token_i++;
 			//TODO:ここいい感じにまとめれそうじゃない? DRY!
-			if(iseqstr(tokens.data[current_token_i]->name,")")){
+			if(iseqstr_current_token(")")){
 				print_token("factor");
 				current_token_i++;
 				return;
 			}
                         while(1){
 				expression();
-				if(!iseqstr(tokens.data[current_token_i]->name,",")){
+				if(!iseqstr_current_token(",")){
 					break;
 				}
 				current_token_i++;
 			}
-			if(iseqstr(tokens.data[current_token_i]->name,")")){
+			if(iseqstr_current_token(")")){
 				print_token("factor");
 				current_token_i++;
 				return;
@@ -281,7 +288,7 @@ void factor(){
                         return;
                 }
         }
-        if(get_token_type(tokens.data[current_token_i]->name)==token_type_integer){
+        if(get_current_token_type()==token_type_integer){
 		print_token("factor");
 		current_token_i++;
                 return;
@@ -333,19 +340,19 @@ void expression(){
 
 void condition(){
         print_token("condition");
-        if(iseqstr(tokens.data[current_token_i]->name,"odd")){
+        if(iseqstr_current_token("odd")){
 		print_token("condition");
 		current_token_i++;
                 expression();
                 return;
         }
         expression();
-        if(iseqstr(tokens.data[current_token_i]->name,"=")||
-                iseqstr(tokens.data[current_token_i]->name,"<>")||
-                iseqstr(tokens.data[current_token_i]->name,"<")||
-                iseqstr(tokens.data[current_token_i]->name,">")||
-                iseqstr(tokens.data[current_token_i]->name,"<=")||
-                iseqstr(tokens.data[current_token_i]->name,">=")){
+        if(iseqstr_current_token("=")||
+                iseqstr_current_token("<>")||
+                iseqstr_current_token("<")||
+                iseqstr_current_token(">")||
+                iseqstr_current_token("<=")||
+                iseqstr_current_token(">=")){
 		print_token("condition");
 		current_token_i++;
                 expression();
@@ -355,10 +362,10 @@ void condition(){
 }
 
 void statement(){
-        if(get_token_type(tokens.data[current_token_i]->name)==token_type_ident){
+        if(get_current_token_type()==token_type_ident){
 		print_token("statement");
                 current_token_i++;
-                if(iseqstr(tokens.data[current_token_i]->name,":=")){
+                if(iseqstr_current_token(":=")){
 			print_token("statement");
 			current_token_i++;
                         expression();
@@ -367,7 +374,7 @@ void statement(){
                 }
                 return;
         }
-        if(iseqstr(tokens.data[current_token_i]->name,"begin")){
+        if(iseqstr_current_token("begin")){
                 print_token("statement");
                 while(1){
 			current_token_i++;
@@ -377,18 +384,18 @@ void statement(){
                         }
 			print_token("statement");
                 }
-                if(!iseqstr(tokens.data[current_token_i]->name,"end")){
+                if(!iseqstr_current_token("end")){
                         exit_by_error("statement end");
                 }
 		print_token("statement");
 		current_token_i++;
                 return;
         }
-        if(iseqstr(tokens.data[current_token_i]->name,"if")){
+        if(iseqstr_current_token("if")){
                 print_token("statement");
 		current_token_i++;
                 condition();
-                if(!iseqstr(tokens.data[current_token_i]->name,"then")){
+                if(!iseqstr_current_token("then")){
                         exit_by_error("statement then");
                 }
 		print_token("statement");
@@ -396,11 +403,11 @@ void statement(){
                 statement();
                 return;
         }
-        if(iseqstr(tokens.data[current_token_i]->name,"while")){
+        if(iseqstr_current_token("while")){
                 print_token("statement");
 		current_token_i++;
                 condition();
-                if(!iseqstr(tokens.data[current_token_i]->name,"do")){
+                if(!iseqstr_current_token("do")){
                         exit_by_error("statement do");
                 }
 		print_token("statement");
@@ -408,19 +415,19 @@ void statement(){
                 statement();
                 return;
         }
-        if(iseqstr(tokens.data[current_token_i]->name,"return")){
+        if(iseqstr_current_token("return")){
                 print_token("statement");
 		current_token_i++;
                 expression();
                 return;
         }
-        if(iseqstr(tokens.data[current_token_i]->name,"write")){
+        if(iseqstr_current_token("write")){
                 print_token("statement");
 		current_token_i++;
                 expression();
                 return;
         }
-        if(iseqstr(tokens.data[current_token_i]->name,"writeln")){
+        if(iseqstr_current_token("writeln")){
                 print_token("statement");
 		current_token_i++;
                 return;
@@ -429,15 +436,15 @@ void statement(){
 
 void block(){
         while(1){
-                if(iseqstr(tokens.data[current_token_i]->name,"const")){
+                if(iseqstr_current_token("const")){
                         print_token("block");
 			current_token_i++;
                         const_decl();
-                }else if(iseqstr(tokens.data[current_token_i]->name,"var")){
+                }else if(iseqstr_current_token("var")){
                         print_token("block");
 			current_token_i++;
                         var_decl();
-                }else if(iseqstr(tokens.data[current_token_i]->name,"function")){
+                }else if(iseqstr_current_token("function")){
                         print_token("block");
                         current_token_i++;
                         func_decl();
