@@ -469,11 +469,11 @@ int main(int argc,char *argv[]){
 	if(tokens.size==0){
 		return 0;
 	}
-
-        block();
-        if(tokens.data[tokens.size-1]->name[0]=='.'){
+	if(iseqstr(tokens.data[tokens.size-1]->name,".")){
                 print_token("completed");
         }else{
                 exit_by_error("expected '.' at the end of program");
         }
+
+        block();
 }
