@@ -472,7 +472,8 @@ int main(int argc,char *argv[]){
 	if(iseqstr(tokens.data[tokens.size-1]->name,".")){
                 print_token("completed");
         }else{
-                exit_by_error("expected '.' at the end of program");
+                fputs("error expected '.' at the end of program\n",stderr);
+		exit(-1);
         }
 
         block();
