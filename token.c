@@ -305,6 +305,7 @@ void factor(){
 			exit_by_error("expected ')' at the end of expression");
                 }
         }
+	exit_by_error("expected ident,number,or'('");
 }
 
 void term(){
