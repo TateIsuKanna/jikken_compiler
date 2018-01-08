@@ -79,8 +79,11 @@ void get_token(){
 				line_p+=2;
 			}else if(line_str[line_p]=='\n'||line_str[line_p]=='\r'){
 				break;
-			}else{
+			}else if(line_str[line_p]==' '||line_str[line_p]=='\t'){
 				line_p++;
+			}else{
+				fprintf(stderr,"%d:%d: error unexpected token '%c'\n",line,line_p+1,line_str[line_p]);
+				exit(-1);
 			}
 		}
 		line++;
