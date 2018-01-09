@@ -36,7 +36,6 @@ int main(){
         char* outstring=(char*)malloc(strlen(inputstring)+1);//NULL文字分+1
 
 	for(int i=0;i<strlen(inputstring);i++){
-		//scanf("%d",&j);
 		if(inputstring[i]>='A' && inputstring[i]<='Z'){
                         printf("%c",inputstring[i]);
 		}else if(inputstring[i]=='('){
@@ -58,8 +57,7 @@ int main(){
                                 while(1){
                                         char c=stack_pop(&parsestack);
                                         printf("%c",c);
-                                        //if(token_priority(inputstring[i])>token_priority(c)){
-                                        if(token_priority(inputstring[i])>=token_priority(c)){//||parsestack.size==0){//**********
+                                        if(token_priority(inputstring[i])<=token_priority(c)){
                                                 break;
                                         }
                                 }
