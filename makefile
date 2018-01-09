@@ -8,6 +8,11 @@ pcp:token.c vector
 vector:vector.*
 	gcc $(CFLAGS) -c -o vector vector.c
 
+stack:stack.*
+	gcc $(CFLAGS) -c -o stack stack.c
+revpol:stack revpol.c
+	gcc $(CFLAGS) -o revpol stack revpol.c
+
 
 clean:
 	rm vector pcp
