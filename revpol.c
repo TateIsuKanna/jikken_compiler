@@ -42,33 +42,38 @@ int main(){
 		}else if(inputstring[i]=='('){
                         stack_push(&parsestack,inputstring[i]);
 		}else if(inputstring[i]==')'){
-                        /*while(1){
-                                if(stack_peek(&parsestack)){
+                        while(1){
+                                char c=stack_pop(&parsestack);
+                                if(c=='('){
+                                        break;
                                 }
-                                printf("%c\n",inputstring[i]);
-                        };*/
+                                printf("%c",c);
+                        };
 		}else{
 			if(parsestack.size==0){  //スタックが空の場合無条件にプッシュ
 				stack_push(&parsestack,inputstring[i]);
 			}else if(token_priority(inputstring[i])>token_priority(stack_peek(&parsestack))){   //inputstringの優先>topの優先
-                                printf("%c",stack_pop(&parsestack));
+                                stack_push(&parsestack,inputstring[i]);
 			}else{                       //inputstringの優先<=topの優先
                                 while(1){
                                         char c=stack_pop(&parsestack);
                                         printf("%c",c);
-                                        if(inputstring[i]>c){
+                                        //if(token_priority(inputstring[i])>token_priority(c)){
+                                        if(token_priority(inputstring[i])>=token_priority(c)){//||parsestack.size==0){//**********
                                                 break;
                                         }
                                 }
+                                stack_push(&parsestack,inputstring[i]);
 			}
 		}
 	}
 
-	/*for(int i=stptr-1;i>=0;i--){
-		strcpy(outstring[onum],stack[i]);
-		onum++;
-	}*/
-        puts("\n");
-
+	while(1){
+                if(parsestack.size==0){
+                        break;
+                }
+                printf("%c",stack_pop(&parsestack));
+        }
+        puts("");
 	//printf("outstring : %s\n",outstring);
 }
