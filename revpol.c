@@ -29,12 +29,31 @@ void three_address_code(char* inputstring){
                 }else if(inputstring[i]=='='){
                         char t1=stack_pop(&code_stack);
                         printf("%c(%c,%d)\n",inputstring[i],t1,count);
+                        printf("LD %c\n",t1);
+                        printf("ST %d\n",count);
                         stack_push(&code_stack,'0'+count);
                         count++;
                 }else if(inputstring[i]!='='){
                         char t1=stack_pop(&code_stack);
                         char t2=stack_pop(&code_stack);
                         printf("%c(%c,%c,%d)\n",inputstring[i],t2,t1,count);
+                        printf("LD %c\n",t2);
+                        switch(inputstring[i]){
+                                case '+':
+                                        printf("AD");
+                                        break;
+                                case '-':
+                                        printf("SB");
+                                        break;
+                                case '*':
+                                        printf("ML");
+                                        break;
+                                case '/':
+                                        printf("DV");
+                                        break;
+                        }
+                        printf(" %c\n",t1);
+                        printf("ST %d\n",count);
                         stack_push(&code_stack,'0'+count);
                         count++;
                 }
