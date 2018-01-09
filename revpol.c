@@ -34,10 +34,12 @@ int main(){
         new_stack(&parsestack);
 
         char* outstring=(char*)malloc(strlen(inputstring)+1);//NULL文字分+1
+        outstring[strlen(inputstring)]='\0';
+        int outstring_i=0;
 
 	for(int i=0;i<strlen(inputstring);i++){
 		if(inputstring[i]>='A' && inputstring[i]<='Z'){
-                        printf("%c",inputstring[i]);
+                        outstring[outstring_i++]=inputstring[i];
 		}else if(inputstring[i]=='('){
                         stack_push(&parsestack,inputstring[i]);
 		}else if(inputstring[i]==')'){
@@ -46,7 +48,7 @@ int main(){
                                 if(c=='('){
                                         break;
                                 }
-                                printf("%c",c);
+                                outstring[outstring_i++]=c;
                         };
 		}else{
 			if(parsestack.size==0){  //スタックが空の場合無条件にプッシュ
@@ -56,7 +58,7 @@ int main(){
 			}else{                       //inputstringの優先<=topの優先
                                 while(1){
                                         char c=stack_pop(&parsestack);
-                                        printf("%c",c);
+                                        outstring[outstring_i++]=c;
                                         if(token_priority(inputstring[i])<=token_priority(c)){
                                                 break;
                                         }
@@ -70,8 +72,9 @@ int main(){
                 if(parsestack.size==0){
                         break;
                 }
-                printf("%c",stack_pop(&parsestack));
+                outstring[outstring_i++]=stack_pop(&parsestack);
         }
+
         puts("");
-	//printf("outstring : %s\n",outstring);
+	printf("outstring : %s\n",outstring);
 }
