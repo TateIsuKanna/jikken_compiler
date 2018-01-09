@@ -19,6 +19,27 @@ int token_priority(char c){
                 return 0;
         }
 }
+void three_address_code(char* inputstring){
+        struct stack code_stack;
+        new_stack(&code_stack);
+        size_t count=0;
+	for(int i=0;i<strlen(inputstring);i++){
+		if(inputstring[i]>='A' && inputstring[i]<='Z'){
+                        stack_push(&code_stack,inputstring[i]);
+                }else if(inputstring[i]=='='){
+                        char t1=stack_pop(&code_stack);
+                        printf("%c(%c,%d)\n",inputstring[i],t1,count);
+                        stack_push(&code_stack,'0'+count);
+                        count++;
+                }else if(inputstring[i]!='='){
+                        char t1=stack_pop(&code_stack);
+                        char t2=stack_pop(&code_stack);
+                        printf("%c(%c,%c,%d)\n",inputstring[i],t2,t1,count);
+                        stack_push(&code_stack,'0'+count);
+                        count++;
+                }
+        }
+}
 
 int main(){
         char* inputstring;
@@ -77,4 +98,7 @@ int main(){
 
         puts("");
 	printf("outstring : %s\n",outstring);
+
+        three_address_code(outstring);
 }
+
