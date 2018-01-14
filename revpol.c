@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
@@ -20,25 +21,32 @@ int token_priority(char c){
                 return 0;
         }
 }
-/*void three_address_code(char* inputstring){
+void three_address_code(char* inputstring){
         struct stack code_stack;
         new_stack(&code_stack);
         size_t count=0;
 	for(int i=0;i<strlen(inputstring);i++){
 		if(inputstring[i]>='A' && inputstring[i]<='Z'){
-                        stack_push(&code_stack,inputstring[i]);
+                        stack_push(&code_stack,inputstring+i,1);
                 }else if(inputstring[i]=='='){
-                        char t1=stack_pop(&code_stack);
-                        printf("%c(%c,%d)\n",inputstring[i],t1,count);
-                        printf("LD %c\n",t1);
-                        printf("ST %d\n",count);
-                        stack_push(&code_stack,'0'+count);
+                        char* t1=stack_pop(&code_stack);
+                        char* t2=stack_pop(&code_stack);
+
+                        printf("%c(%s,%s)\n",inputstring[i],t1,t2);
+                        printf("LD %s\n",t1);
+                        printf("ST %s\n",t2);
+
                         count++;
                 }else if(inputstring[i]!='='){
-                        char t1=stack_pop(&code_stack);
-                        char t2=stack_pop(&code_stack);
-                        printf("%c(%c,%c,%d)\n",inputstring[i],t2,t1,count);
-                        printf("LD %c\n",t2);
+                        char* t1=stack_pop(&code_stack);
+                        char* t2=stack_pop(&code_stack);
+
+			char* work_str;
+			asprintf(&work_str,"W%d",count);
+                        stack_push(&code_stack,work_str,strlen(work_str));
+
+                        printf("%c(%s,%s,%s)\n",inputstring[i],t2,t1,work_str);
+                        printf("LD %s\n",t2);
                         switch(inputstring[i]){
                                 case '+':
                                         printf("AD");
@@ -53,13 +61,13 @@ int token_priority(char c){
                                         printf("DV");
                                         break;
                         }
-                        printf(" %c\n",t1);
-                        printf("ST %d\n",count);
-                        stack_push(&code_stack,'0'+count);
+                        printf(" %s\n",t1);
+
+                        printf("ST %s\n",work_str);
                         count++;
                 }
         }
-}*/
+}
 
 bool is_eqstr(char* a,char* b){
 	return strcmp(a,b)==0;
@@ -73,7 +81,7 @@ int main(){
 	for(int i=0;i<strlen(inputstring);i++){
 		printf("%c ",inputstring[i]);
 	}
-	printf("\n");
+	puts("");
 
         struct stack parsestack;
         new_stack(&parsestack);
@@ -129,7 +137,6 @@ int main(){
         puts("");
 	printf("outstring : %s\n",outstring);
 
-	printf("three_address_codeはおあずけ");
-        //three_address_code(outstring);
+        three_address_code(outstring);
 }
 
