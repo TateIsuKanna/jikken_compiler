@@ -1,6 +1,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
+#include<stdbool.h>
 #include"stack.h"
 
 int token_priority(char c){
@@ -19,7 +20,7 @@ int token_priority(char c){
                 return 0;
         }
 }
-void three_address_code(char* inputstring){
+/*void three_address_code(char* inputstring){
         struct stack code_stack;
         new_stack(&code_stack);
         size_t count=0;
@@ -58,6 +59,10 @@ void three_address_code(char* inputstring){
                         count++;
                 }
         }
+}*/
+
+bool is_eqstr(char* a,char* b){
+	return strcmp(a,b)==0;
 }
 
 int main(){
@@ -77,33 +82,38 @@ int main(){
         outstring[strlen(inputstring)]='\0';
         int outstring_i=0;
 
+	//演算子などはとりあえず1文字としている(後で自由に変えよう)
+
 	for(int i=0;i<strlen(inputstring);i++){
 		if(inputstring[i]>='A' && inputstring[i]<='Z'){
-                        outstring[outstring_i++]=inputstring[i];
+			strncpy(outstring+outstring_i,inputstring+i,1);
+			outstring_i++;
 		}else if(inputstring[i]=='('){
-                        stack_push(&parsestack,inputstring[i]);
+                        stack_push(&parsestack,inputstring+i,1);
 		}else if(inputstring[i]==')'){
                         while(1){
-                                char c=stack_pop(&parsestack);
-                                if(c=='('){
+                                char* str=stack_pop(&parsestack);
+                                if(is_eqstr(str,"(")){
                                         break;
                                 }
-                                outstring[outstring_i++]=c;
+				strcpy(outstring+outstring_i,str);
+				outstring_i+=strlen(str);
                         };
 		}else{
 			if(parsestack.size==0){  //スタックが空の場合無条件にプッシュ
-				stack_push(&parsestack,inputstring[i]);
-			}else if(token_priority(inputstring[i])>token_priority(stack_peek(&parsestack))){   //inputstringの優先>topの優先
-                                stack_push(&parsestack,inputstring[i]);
+				stack_push(&parsestack,inputstring+i,1);
+			}else if(token_priority(inputstring[i])>token_priority(stack_peek(&parsestack)[0])){   //inputstringの優先>topの優先
+                                stack_push(&parsestack,inputstring+i,1);
 			}else{                       //inputstringの優先<=topの優先
                                 while(1){
-                                        char c=stack_pop(&parsestack);
-                                        outstring[outstring_i++]=c;
-                                        if(token_priority(inputstring[i])<=token_priority(c)){
+                                        char* str=stack_pop(&parsestack);
+					strncpy(outstring+outstring_i,str,1);
+					outstring_i++;
+                                        if(token_priority(inputstring[i])<=token_priority(str[0])){
                                                 break;
                                         }
                                 }
-                                stack_push(&parsestack,inputstring[i]);
+                                stack_push(&parsestack,inputstring+i,1);
 			}
 		}
 	}
@@ -112,12 +122,14 @@ int main(){
                 if(parsestack.size==0){
                         break;
                 }
-                outstring[outstring_i++]=stack_pop(&parsestack);
+		strcpy(outstring+outstring_i,stack_pop(&parsestack));
+		outstring_i++;
         }
 
         puts("");
 	printf("outstring : %s\n",outstring);
 
-        three_address_code(outstring);
+	printf("three_address_codeはおあずけ");
+        //three_address_code(outstring);
 }
 
