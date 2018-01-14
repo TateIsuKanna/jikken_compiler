@@ -111,12 +111,14 @@ int main(){
 				outstring_i+=strlen(str);
                         };
 		}else{
+			if(i<strlen(inputstring)-1&&(inputstring[i]==inputstring[i+1])){
+				//FIXME:A+A+A+Aとかダメになる
+				show_error_with_caret_exit(i);
+			}
 			if(parsestack.size==0){  //スタックが空の場合無条件にプッシュ
 				stack_push(&parsestack,inputstring+i,1);
 			}else if(token_priority(inputstring[i])>token_priority(stack_peek(&parsestack)[0])){
                                 stack_push(&parsestack,inputstring+i,1);
-			}else if(token_priority(inputstring[i])==token_priority(stack_peek(&parsestack)[0])){
-				show_error_with_caret_exit(i);
 			}else{
                                 while(1){
                                         char* str=stack_pop(&parsestack);
