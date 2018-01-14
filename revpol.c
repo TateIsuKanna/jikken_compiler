@@ -73,15 +73,18 @@ bool is_eqstr(char* a,char* b){
 	return strcmp(a,b)==0;
 }
 
+void show_error_with_caret_exit(size_t pos){
+	for(int i=0;i<pos;++i){
+		fprintf(stderr," ");
+	}
+	fprintf(stderr,"^\n");
+	fprintf(stderr,"%d: error: 演算子が続いています\n",pos+1);
+	exit(-1);
+}
+
 int main(){
         char* inputstring;
         scanf("%ms",&inputstring);
-
-
-	for(int i=0;i<strlen(inputstring);i++){
-		printf("%c ",inputstring[i]);
-	}
-	puts("");
 
         struct stack parsestack;
         new_stack(&parsestack);
@@ -110,9 +113,11 @@ int main(){
 		}else{
 			if(parsestack.size==0){  //スタックが空の場合無条件にプッシュ
 				stack_push(&parsestack,inputstring+i,1);
-			}else if(token_priority(inputstring[i])>token_priority(stack_peek(&parsestack)[0])){   //inputstringの優先>topの優先
+			}else if(token_priority(inputstring[i])>token_priority(stack_peek(&parsestack)[0])){
                                 stack_push(&parsestack,inputstring+i,1);
-			}else{                       //inputstringの優先<=topの優先
+			}else if(token_priority(inputstring[i])==token_priority(stack_peek(&parsestack)[0])){
+				show_error_with_caret_exit(i);
+			}else{
                                 while(1){
                                         char* str=stack_pop(&parsestack);
 					strncpy(outstring+outstring_i,str,1);
@@ -130,7 +135,13 @@ int main(){
                 if(parsestack.size==0){
                         break;
                 }
-		strcpy(outstring+outstring_i,stack_pop(&parsestack));
+		char* str=stack_pop(&parsestack);
+		//TODO:トークンにどこか覚えさせとく(スタックにも)ことでエラーの位置を表示
+		if(is_eqstr(str,"(")){
+			fprintf(stderr,"error: かっこが閉じられていません\n");
+			exit(-1);
+		}
+		strcpy(outstring+outstring_i,str);
 		outstring_i++;
         }
 
