@@ -15,7 +15,7 @@ revpol:stack revpol.c
 
 
 clean:
-	rm vector pcp
+	rm vector stack pcp revpol
 
 run:pcp
 	./pcp $(ARG)
